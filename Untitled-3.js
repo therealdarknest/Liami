@@ -477,7 +477,6 @@ async function handleVideoUpload() {
             .insert([{
                 business_id: businessData.id,
                 video_url: publicUrlData.publicUrl,
-                title: title,
                 description: description || null
             }]);
 
@@ -747,9 +746,16 @@ function buildSearchFeed(results) {
 }
 
 function renderBusinessResults(results, query) {
-    const panel = document.getElementById("business-results");
+    const resultsContainer = document.getElementById("business-results");
+
+    if (!resultsContainer) {
+        console.error("LIAMI: elemento business-results non trovato nell'HTML.");
+        return;
+    }
+
+    resultsContainer.replaceChildren();
+
     const heading = document.getElementById("feed-query-title");
-    panel.replaceChildren();
     heading.textContent = `Risultati per “${query}”`;
 
     const panelHeader = document.createElement("div");
@@ -760,13 +766,13 @@ function renderBusinessResults(results, query) {
     panelCount.className = "business-results-count";
     panelCount.textContent = String(results.length);
     panelHeader.append(panelTitle, panelCount);
-    panel.appendChild(panelHeader);
+    resultsContainer.appendChild(panelHeader);
 
     if (!results.length) {
         const emptyMessage = document.createElement("p");
         emptyMessage.className = "business-results-empty";
         emptyMessage.textContent = "Non abbiamo trovato attività corrispondenti. Prova con un'altra categoria o città.";
-        panel.appendChild(emptyMessage);
+        resultsContainer.appendChild(emptyMessage);
     }
 
     for (const business of results) {
@@ -811,7 +817,7 @@ function renderBusinessResults(results, query) {
             card.appendChild(phone);
         }
 
-        panel.appendChild(card);
+        resultsContainer.appendChild(card);
     }
 
     currentMapQuery = results[0]?.city || query;
@@ -852,7 +858,7 @@ function renderFeed(videos, businessesById) {
         title.textContent = videoData.title || "Video dell'attività";
         info.appendChild(title);
 
-        const business = businessesById.get(videoData.business_id);
+        const business = businessesById[videoData.business_id];
         if (business) {
             const businessName = document.createElement("p");
             businessName.textContent = business.name || "";
@@ -892,13 +898,13 @@ async function loadVideoFeed() {
 
     const { data: videos, error: videosError } = await supabaseClient
         .from("business_videos")
-        .select("business_id, video_url, title, description")
+        .select("id, business_id, video_url, description")
         .limit(50);
 
     if (videosError) throw videosError;
 
     const businessIds = [...new Set((videos || []).map((video) => video.business_id).filter(Boolean))];
-    let businessesById = new Map();
+    let businessesById = {};
 
     if (businessIds.length) {
         const { data: businesses, error: businessesError } = await supabaseClient
@@ -907,12 +913,12 @@ async function loadVideoFeed() {
             .in("id", businessIds);
 
         if (businessesError) throw businessesError;
-        businessesById = new Map((businesses || []).map((business) => [business.id, business]));
+        businessesById = Object.fromEntries((businesses || []).map((business) => [business.id, business]));
     }
 
     allFeedVideos = (videos || [])
         .filter((video) => video.video_url)
-        .map((video) => ({ ...video, business: businessesById.get(video.business_id) }));
+        .map((video) => ({ ...video, business: businessesById[video.business_id] }));
     renderFeed(allFeedVideos, businessesById);
 }
 
