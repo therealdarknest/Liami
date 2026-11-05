@@ -17,15 +17,21 @@ const supabaseClient = supabase.createClient(
 );
 
 function openAuthModal() {
-    document.getElementById("auth-modal").classList.add("active");
+    const modal = document.getElementById("auth-modal");
+    modal.classList.add("active");
+    modal.setAttribute("aria-hidden", "false");
 }
 
 function closeAuthModal() {
-    document.getElementById("auth-modal").classList.remove("active");
+    const modal = document.getElementById("auth-modal");
+    modal.classList.remove("active");
+    modal.setAttribute("aria-hidden", "true");
 }
 
 function closeUploadModal() {
-    document.getElementById("upload-modal").classList.remove("active");
+    const modal = document.getElementById("upload-modal");
+    modal.classList.remove("active");
+    modal.setAttribute("aria-hidden", "true");
 }
 
 
@@ -78,7 +84,9 @@ async function openUploadModal() {
         return;
     }
 
-    document.getElementById("upload-modal").classList.add("active");
+    const modal = document.getElementById("upload-modal");
+    modal.classList.add("active");
+    modal.setAttribute("aria-hidden", "false");
 }
 
 
@@ -479,6 +487,7 @@ async function handleVideoUpload() {
         alert("Azienda registrata e video caricato con successo!");
 
         closeUploadModal();
+        refreshVideoFeed();
 
     } catch (err) {
 
@@ -486,4 +495,408 @@ async function handleVideoUpload() {
         alert("Errore caricamento: " + err.message);
 
     }
+}
+
+let allFeedVideos = [];
+let currentMapQuery = "Italia";
+let videoFeedPromise;
+
+function appendChatMessage(message, className) {
+    const chatArea = document.getElementById("chat-area");
+    const messageElement = document.createElement("div");
+    messageElement.className = `message ${className}`;
+    messageElement.textContent = message;
+    chatArea.appendChild(messageElement);
+}
+
+function getSearchTerms(query) {
+    const ignoredWords = new Set([
+        "che", "come", "dove", "quando", "quale", "quali", "per", "con",
+        "una", "uno", "del", "della", "dei", "nelle", "vicino", "vicini",
+        "vicina", "vicine", "me", "cerca", "trovami", "cerco", "cercare"
+    ]);
+
+    const terms = [...new Set(
+        query.toLocaleLowerCase("it").match(/[\p{L}\p{N}-]{2,}/gu) || []
+    )]
+        .filter((term) => !ignoredWords.has(term))
+        .slice(0, 4);
+
+    return terms;
+}
+
+const relatedSearchTerms = {
+    ristrutturare: ["ristrutturazione", "ristrutturazioni", "edilizia", "edile", "costruzioni", "muratore", "impresa"],
+    ristrutturazione: ["ristrutturare", "edilizia", "edile", "costruzioni", "muratore", "impresa"],
+    ristrutturazioni: ["ristrutturare", "edilizia", "edile", "costruzioni", "muratore", "impresa"],
+    ristruttura: ["ristrutturazione", "edilizia", "edile", "costruzioni", "muratore", "impresa"],
+    edilizia: ["edile", "impresa", "costruzioni", "ristrutturazione", "muratore"],
+    edile: ["edilizia", "impresa", "costruzioni", "ristrutturazione", "muratore"],
+    muratore: ["edile", "edilizia", "costruzioni", "ristrutturazione"],
+    idraulico: ["idraulica", "impianti", "tubi"],
+    elettricista: ["elettrico", "elettricità", "impianti"],
+    imbianchino: ["pittura", "imbiancatura", "verniciatura"],
+    giardiniere: ["giardinaggio", "giardini"],
+    ristorante: ["ristoranti", "ristorazione", "trattoria", "pizzeria"],
+    ristoranti: ["ristorante", "ristorazione", "trattoria", "pizzeria"],
+    parrucchiere: ["parrucchieri", "barbiere", "salone"],
+    dentista: ["dentisti", "odontoiatria", "odontoiatra"]
+};
+
+function getExpandedSearchTerms(terms) {
+    const expandedTerms = new Set(terms);
+    for (const term of terms) {
+        for (const relatedTerm of relatedSearchTerms[term] || []) {
+            expandedTerms.add(relatedTerm);
+        }
+    }
+
+    return [...expandedTerms].slice(0, 16);
+}
+
+function getBusinessRelevance(business, queryTerms) {
+    const fields = [
+        { value: business.name, weight: 1 },
+        { value: business.category, weight: 1 },
+        { value: business.description, weight: 0.75 },
+        { value: business.city, weight: 0.4 }
+    ].filter((field) => field.value);
+
+    if (!queryTerms.length || !fields.length) return 0;
+
+    const total = queryTerms.reduce((score, term) => {
+        const variants = [
+            { value: term, weight: 1 },
+            ...(relatedSearchTerms[term] || []).map((value) => ({ value, weight: 0.8 }))
+        ];
+        let bestMatch = 0;
+
+        for (const variant of variants) {
+            for (const field of fields) {
+                if (field.value.toLocaleLowerCase("it").includes(variant.value)) {
+                    bestMatch = Math.max(bestMatch, variant.weight * field.weight);
+                }
+            }
+        }
+
+        return score + bestMatch;
+    }, 0);
+
+    return Math.round((total / queryTerms.length) * 100);
+}
+
+async function searchBusinesses(query) {
+    const queryTerms = getSearchTerms(query);
+    const terms = getExpandedSearchTerms(queryTerms);
+    if (!terms.length) return [];
+
+    const filters = terms.flatMap((term) => [
+        `name.ilike.%${term}%`,
+        `category.ilike.%${term}%`,
+        `city.ilike.%${term}%`,
+        `description.ilike.%${term}%`
+    ]);
+
+    const { data, error } = await supabaseClient
+        .from("businesses")
+        .select("id, name, category, city, address, phone, description")
+        .or(filters.join(","))
+        .limit(30);
+
+    if (error) throw error;
+    return (data || [])
+        .map((business) => ({
+            ...business,
+            relevance: getBusinessRelevance(business, queryTerms)
+        }))
+        .sort((first, second) => second.relevance - first.relevance);
+}
+
+function renderBusinessResults(results, query) {
+    const panel = document.getElementById("business-results");
+    const heading = document.getElementById("feed-query-title");
+    panel.replaceChildren();
+    heading.textContent = `Risultati per “${query}”`;
+
+    const panelHeader = document.createElement("div");
+    panelHeader.className = "business-results-header";
+    const panelTitle = document.createElement("h3");
+    panelTitle.textContent = "Attività pertinenti";
+    const panelCount = document.createElement("span");
+    panelCount.className = "business-results-count";
+    panelCount.textContent = String(results.length);
+    panelHeader.append(panelTitle, panelCount);
+    panel.appendChild(panelHeader);
+
+    if (!results.length) {
+        const emptyMessage = document.createElement("p");
+        emptyMessage.className = "business-results-empty";
+        emptyMessage.textContent = "Non abbiamo trovato attività corrispondenti. Prova con un'altra categoria o città.";
+        panel.appendChild(emptyMessage);
+    }
+
+    for (const business of results) {
+        const card = document.createElement("article");
+        card.className = "business-result-card";
+
+        const name = document.createElement("h3");
+        name.textContent = business.name || "Attività";
+        card.appendChild(name);
+
+        const relevance = document.createElement("span");
+        relevance.className = "business-result-relevance";
+        relevance.textContent = `${business.relevance}% attinenza stimata`;
+        card.appendChild(relevance);
+
+        if (business.category) {
+            const category = document.createElement("span");
+            category.className = "business-result-category";
+            category.textContent = business.category;
+            card.appendChild(category);
+        }
+
+        if (business.city || business.address) {
+            const location = document.createElement("p");
+            location.className = "business-result-location";
+            location.textContent = [business.city, business.address].filter(Boolean).join(" · ");
+            card.appendChild(location);
+        }
+
+        if (business.description) {
+            const description = document.createElement("p");
+            description.className = "business-result-description";
+            description.textContent = business.description;
+            card.appendChild(description);
+        }
+
+        if (business.phone) {
+            const phone = document.createElement("a");
+            phone.className = "business-result-phone";
+            phone.href = `tel:${business.phone.replace(/[^\d+]/g, "")}`;
+            phone.textContent = `Chiama · ${business.phone}`;
+            card.appendChild(phone);
+        }
+
+        panel.appendChild(card);
+    }
+
+    currentMapQuery = results[0]?.city || query;
+}
+
+function renderFeed(videos, businessesById) {
+    const feed = document.getElementById("liami-feed");
+    const container = document.getElementById("feed-container");
+    container.replaceChildren();
+
+    if (!videos.length) {
+        const emptyMessage = document.createElement("p");
+        emptyMessage.className = "feed-status";
+        emptyMessage.textContent = "Non ci sono video disponibili per questa ricerca.";
+        container.appendChild(emptyMessage);
+        feed.hidden = false;
+        return;
+    }
+
+    for (const videoData of videos) {
+        if (!videoData.video_url) continue;
+
+        const card = document.createElement("article");
+        card.className = "video-card";
+
+        const video = document.createElement("video");
+        video.src = videoData.video_url;
+        video.controls = true;
+        video.playsInline = true;
+        video.preload = "metadata";
+        video.setAttribute("aria-label", videoData.title || "Video dell'attività");
+        card.appendChild(video);
+
+        const info = document.createElement("div");
+        info.className = "video-info";
+
+        const title = document.createElement("h3");
+        title.textContent = videoData.title || "Video dell'attività";
+        info.appendChild(title);
+
+        const business = businessesById.get(videoData.business_id);
+        if (business) {
+            const businessName = document.createElement("p");
+            businessName.textContent = business.name || "";
+            info.appendChild(businessName);
+
+            const location = [business.category, business.city].filter(Boolean).join(" · ");
+            if (location) {
+                const details = document.createElement("span");
+                details.textContent = location;
+                info.appendChild(details);
+            }
+        }
+
+        if (videoData.description) {
+            const description = document.createElement("p");
+            description.textContent = videoData.description;
+            info.appendChild(description);
+        }
+
+        card.appendChild(info);
+        container.appendChild(card);
+    }
+
+    feed.hidden = false;
+}
+
+async function loadVideoFeed() {
+    const feed = document.getElementById("liami-feed");
+    const container = document.getElementById("feed-container");
+    container.replaceChildren();
+
+    const status = document.createElement("p");
+    status.className = "feed-status";
+    status.textContent = "Caricamento video...";
+    container.appendChild(status);
+    feed.hidden = false;
+
+    const { data: videos, error: videosError } = await supabaseClient
+        .from("business_videos")
+        .select("business_id, video_url, title, description")
+        .limit(50);
+
+    if (videosError) throw videosError;
+
+    const businessIds = [...new Set((videos || []).map((video) => video.business_id).filter(Boolean))];
+    let businessesById = new Map();
+
+    if (businessIds.length) {
+        const { data: businesses, error: businessesError } = await supabaseClient
+            .from("businesses")
+            .select("id, name, category, city")
+            .in("id", businessIds);
+
+        if (businessesError) throw businessesError;
+        businessesById = new Map((businesses || []).map((business) => [business.id, business]));
+    }
+
+    allFeedVideos = (videos || [])
+        .filter((video) => video.video_url)
+        .map((video) => ({ ...video, business: businessesById.get(video.business_id) }));
+    renderFeed(allFeedVideos, businessesById);
+}
+
+function showFeedError(error) {
+    console.error("Errore caricamento feed:", error);
+    const container = document.getElementById("feed-container");
+    container.replaceChildren();
+    const message = document.createElement("p");
+    message.className = "feed-status";
+    message.textContent = "Impossibile caricare il feed. Controlla la connessione e la configurazione di Supabase.";
+    container.appendChild(message);
+}
+
+function refreshVideoFeed() {
+    videoFeedPromise = loadVideoFeed().catch(showFeedError);
+    return videoFeedPromise;
+}
+
+async function handleSearch() {
+    const input = document.getElementById("user-input");
+    const sendButton = document.getElementById("send-button");
+    const query = input.value.trim();
+    if (!query || sendButton.disabled) return;
+
+    appendChatMessage(query, "user");
+    input.value = "";
+    sendButton.disabled = true;
+
+    try {
+        const results = await searchBusinesses(query);
+        await videoFeedPromise;
+        renderBusinessResults(results, query);
+
+        const resultIds = new Set(results.map((business) => business.id));
+        const matchingVideos = allFeedVideos.filter((video) => resultIds.has(video.business_id));
+        const businessesById = new Map(
+            results.map((business) => [business.id, business])
+        );
+        renderFeed(matchingVideos, businessesById);
+
+        const feed = document.getElementById("liami-feed");
+        const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        feed.scrollIntoView({
+            behavior: reduceMotion ? "auto" : "smooth",
+            block: "start"
+        });
+    } catch (error) {
+        console.error("Errore ricerca attività:", error);
+        appendChatMessage(
+            "Non è stato possibile completare la ricerca. Controlla la connessione e la configurazione di Supabase.",
+            "error"
+        );
+    } finally {
+        sendButton.disabled = false;
+        input.focus();
+    }
+}
+
+function openMap() {
+    const overlay = document.getElementById("map-overlay");
+    const map = overlay.querySelector("iframe");
+    map.src = `https://maps.google.com/maps?q=${encodeURIComponent(currentMapQuery)}&z=12&output=embed`;
+    overlay.classList.add("active");
+    overlay.setAttribute("aria-hidden", "false");
+}
+
+function closeMap() {
+    const overlay = document.getElementById("map-overlay");
+    overlay.classList.remove("active");
+    overlay.setAttribute("aria-hidden", "true");
+}
+
+function initializePageInteractions() {
+    const input = document.getElementById("user-input");
+    const sendButton = document.getElementById("send-button");
+    const mapOverlay = document.getElementById("map-overlay");
+
+    sendButton.addEventListener("click", handleSearch);
+    input.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" && !event.shiftKey) {
+            event.preventDefault();
+            handleSearch();
+        }
+    });
+
+    document.querySelectorAll(".suggestion").forEach((button) => {
+        button.addEventListener("click", () => {
+            input.value = button.textContent.replace(/^[^\p{L}\p{N}]+/u, "").trim();
+            handleSearch();
+        });
+    });
+
+    document.getElementById("open-map-button").addEventListener("click", openMap);
+    document.getElementById("close-map").addEventListener("click", closeMap);
+    mapOverlay.addEventListener("click", (event) => {
+        if (event.target === mapOverlay) closeMap();
+    });
+
+    document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+            closeMap();
+            closeAuthModal();
+            closeUploadModal();
+        }
+    });
+
+    refreshVideoFeed();
+}
+
+document.addEventListener("DOMContentLoaded", initializePageInteractions);
+
+const cursorAura = document.querySelector(".cursor-aura");
+
+if (cursorAura) {
+    document.addEventListener("pointermove", (event) => {
+        if (event.pointerType === "touch") return;
+
+        cursorAura.style.left = `${event.clientX}px`;
+        cursorAura.style.top = `${event.clientY}px`;
+    });
 }
