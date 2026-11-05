@@ -636,6 +636,10 @@ function getBusinessRelevance(business, queryTerms) {
 // ========================================
 
 async function searchBusinesses(query) {
+    console.log("LIAMI: avvio ricerca", query);
+    console.log("LIAMI: Supabase disponibile:", typeof supabase);
+    console.log("LIAMI: client disponibile:", typeof supabaseClient);
+
     if (!query || !query.trim()) {
         return [];
     }
@@ -645,6 +649,9 @@ async function searchBusinesses(query) {
             p_query: query.trim(),
             p_limit: 50
         });
+
+        console.log("LIAMI RPC DATA:", data);
+        console.log("LIAMI RPC ERROR:", error);
 
         if (error) {
             console.error("Errore motore di ricerca LIAMI:", error);
