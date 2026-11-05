@@ -747,15 +747,21 @@ function renderBusinessResults(results, query) {
     const panel = document.getElementById("business-results");
     const heading = document.getElementById("feed-query-title");
 
+    console.log("LIAMI HTML CHECK:", {
+        businessResults: panel,
+        feedQueryTitle: heading,
+        page: window.location.href
+    });
+
     if (!panel || !heading) {
-        console.error(
-            "LIAMI: mancano business-results o feed-query-title nell'HTML."
-        );
+        console.error("LIAMI: elementi HTML non trovati.");
         return;
     }
 
     panel.replaceChildren();
-    heading.textContent = `Risultati per “${query}”`;
+    heading.textContent = results.length
+        ? `Attività per: ${query}`
+        : `Nessuna attività trovata per: ${query}`;
 
     const panelHeader = document.createElement("div");
     panelHeader.className = "business-results-header";
