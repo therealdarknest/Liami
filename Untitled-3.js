@@ -9,7 +9,7 @@
 // ========================================
 
 const SUPABASE_URL = "https://luxtuspsmyryopocdysx.supabase.co";
-const SUPABASE_KEY = "LA_TUA_CHIAVE_PUBLISHABLE";
+const SUPABASE_KEY = "sb_publishable_zxxcavCb2WZk40Tmk9nwPA_bpYFtPcQ";
 
 const supabaseClient = supabase.createClient(
     SUPABASE_URL,
