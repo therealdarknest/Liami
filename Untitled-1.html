@@ -1,0 +1,606 @@
+
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#09090d">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="format-detection" content="telephone=no">
+
+    <title>liami.AI</title>
+
+    <link rel="stylesheet" href="Untitled-2.css">
+
+    <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script defer src="Untitled-3.js"></script>
+</head>
+
+<body>
+
+    <!-- BARRA AZIONI -->
+    <div class="floating-action-bar">
+        <button
+            id="auth-btn"
+            class="floating-btn"
+            type="button"
+            onclick="openAuthModal()">
+            Accedi / Registrati
+        </button>
+
+        <button
+            class="floating-btn primary"
+            type="button"
+            onclick="openUploadModal()">
+            + Carica Video
+        </button>
+    </div>
+
+
+    <!-- ACCESSO E REGISTRAZIONE -->
+    <div id="auth-modal" class="modal-overlay" aria-hidden="true">
+
+        <div
+            class="modal-window"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="auth-modal-title">
+
+            <div class="modal-header">
+
+                <div>
+                    <h2 id="auth-modal-title" class="visually-hidden">
+                        Account Liami
+                    </h2>
+
+                    <div class="auth-tabs">
+
+                        <button
+                            id="tab-login"
+                            class="tab-btn active"
+                            type="button"
+                            onclick="switchAuthTab('login')">
+                            Accedi
+                        </button>
+
+                        <button
+                            id="tab-register"
+                            class="tab-btn"
+                            type="button"
+                            onclick="switchAuthTab('register')">
+                            Registrati
+                        </button>
+
+                    </div>
+                </div>
+
+                <button
+                    class="close-btn"
+                    type="button"
+                    aria-label="Chiudi"
+                    onclick="closeAuthModal()">
+                    ✕
+                </button>
+
+            </div>
+
+
+            <!-- LOGIN -->
+            <div id="form-login" class="form-group">
+
+                <input
+                    type="email"
+                    id="login-email"
+                    placeholder="La tua email..."
+                    autocomplete="email"
+                    required>
+
+                <input
+                    type="password"
+                    id="login-password"
+                    placeholder="La tua password..."
+                    autocomplete="current-password"
+                    required>
+
+                <button
+                    class="submit-btn"
+                    type="button"
+                    onclick="handleLogin()">
+                    Entra
+                </button>
+
+            </div>
+
+
+            <!-- REGISTRAZIONE -->
+            <div id="form-register" class="form-group" hidden>
+
+                <h3 class="register-heading">
+                    Crea il tuo account
+                </h3>
+
+                <p class="register-description">
+                    Scegli come vuoi utilizzare LIAMI.AI.
+                </p>
+
+
+                <!-- SCELTA TIPO ACCOUNT -->
+                <div class="register-type-selector">
+
+                    <button
+                        id="register-client-tab"
+                        class="register-type-btn active"
+                        type="button"
+                        onclick="switchRegisterType('client')">
+
+                        <span class="register-type-icon">♙</span>
+
+                        <span class="register-type-title">
+                            Cliente
+                        </span>
+
+                        <span class="register-type-description">
+                            Cerco servizi e professionisti
+                        </span>
+
+                    </button>
+
+
+                    <button
+                        id="register-business-tab"
+                        class="register-type-btn"
+                        type="button"
+                        onclick="switchRegisterType('business')">
+
+                        <span class="register-type-icon">▦</span>
+
+                        <span class="register-type-title">
+                            Azienda
+                        </span>
+
+                        <span class="register-type-description">
+                            Offro servizi e attività
+                        </span>
+
+                    </button>
+
+                </div>
+
+
+                <!-- REGISTRAZIONE CLIENTE -->
+                <div
+                    id="client-register-fields"
+                    class="register-fields">
+
+                    <h3 class="register-form-title">
+                        Account cliente
+                    </h3>
+
+                    <input
+                        type="text"
+                        id="client-first-name"
+                        placeholder="Nome..."
+                        autocomplete="given-name"
+                        maxlength="60"
+                        required>
+
+                    <input
+                        type="text"
+                        id="client-last-name"
+                        placeholder="Cognome..."
+                        autocomplete="family-name"
+                        maxlength="60"
+                        required>
+
+                    <input
+                        type="text"
+                        id="client-username"
+                        placeholder="Nome utente..."
+                        autocomplete="username"
+                        minlength="3"
+                        maxlength="30"
+                        pattern="[A-Za-z0-9_]+"
+                        required>
+
+                    <input
+                        type="email"
+                        id="client-register-email"
+                        placeholder="La tua email..."
+                        autocomplete="email"
+                        required>
+
+                    <input
+                        type="password"
+                        id="client-register-password"
+                        placeholder="Crea una password..."
+                        autocomplete="new-password"
+                        minlength="8"
+                        required>
+
+                    <input
+                        type="password"
+                        id="client-confirm-password"
+                        placeholder="Conferma password..."
+                        autocomplete="new-password"
+                        minlength="8"
+                        required>
+
+                    <button
+                        class="submit-btn"
+                        type="button"
+                        onclick="handleRegister('client')">
+                        Crea account cliente
+                    </button>
+
+                </div>
+
+
+                <!-- REGISTRAZIONE AZIENDA -->
+                <div
+                    id="business-register-fields"
+                    class="register-fields"
+                    hidden>
+
+                    <h3 class="register-form-title">
+                        Account aziendale
+                    </h3>
+
+                    <input
+                        type="text"
+                        id="business-first-name"
+                        placeholder="Nome del referente..."
+                        autocomplete="given-name"
+                        maxlength="60"
+                        required>
+
+                    <input
+                        type="text"
+                        id="business-last-name"
+                        placeholder="Cognome del referente..."
+                        autocomplete="family-name"
+                        maxlength="60"
+                        required>
+
+                    <input
+                        type="text"
+                        id="business-register-name"
+                        placeholder="Nome dell'azienda..."
+                        autocomplete="organization"
+                        maxlength="100"
+                        required>
+
+                    <input
+                        type="text"
+                        id="business-username"
+                        placeholder="Nome utente aziendale..."
+                        autocomplete="username"
+                        minlength="3"
+                        maxlength="30"
+                        pattern="[A-Za-z0-9_]+"
+                        required>
+
+                    <input
+                        type="email"
+                        id="business-register-email"
+                        placeholder="Email aziendale..."
+                        autocomplete="email"
+                        required>
+
+                    <input
+                        type="password"
+                        id="business-register-password"
+                        placeholder="Crea una password..."
+                        autocomplete="new-password"
+                        minlength="8"
+                        required>
+
+                    <input
+                        type="password"
+                        id="business-confirm-password"
+                        placeholder="Conferma password..."
+                        autocomplete="new-password"
+                        minlength="8"
+                        required>
+
+                    <button
+                        class="submit-btn"
+                        type="button"
+                        onclick="handleRegister('business')">
+                        Crea account aziendale
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- REGISTRAZIONE ATTIVITÀ E CARICAMENTO VIDEO -->
+    <div id="upload-modal" class="modal-overlay" aria-hidden="true">
+
+        <div
+            class="modal-window upload-window"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="upload-modal-title">
+
+            <div class="modal-header">
+
+                <h2 id="upload-modal-title">
+                    Registra attività e carica video
+                </h2>
+
+                <button
+                    class="close-btn"
+                    type="button"
+                    aria-label="Chiudi"
+                    onclick="closeUploadModal()">
+                    ✕
+                </button>
+
+            </div>
+
+            <div class="form-group">
+
+                <label class="file-drop-zone" for="video-file-input">
+
+                    <span class="upload-icon">↑</span>
+
+                    <span id="file-name-label">
+                        Seleziona un video (.mp4, .webm)
+                    </span>
+
+                    <input
+                        type="file"
+                        id="video-file-input"
+                        accept="video/mp4,video/webm"
+                        hidden
+                        onchange="updateFileName(this)">
+
+                </label>
+
+
+                <input
+                    type="text"
+                    id="business-name"
+                    placeholder="Nome dell'attività..."
+                    autocomplete="organization"
+                    required>
+
+                <input
+                    type="text"
+                    id="business-category"
+                    placeholder="Categoria (es. Edilizia, Ristorazione)..."
+                    required>
+
+                <input
+                    type="text"
+                    id="business-city"
+                    placeholder="Città..."
+                    autocomplete="address-level2"
+                    required>
+
+                <input
+                    type="text"
+                    id="business-address"
+                    placeholder="Indirizzo (opzionale)..."
+                    autocomplete="street-address">
+
+                <input
+                    type="tel"
+                    id="business-phone"
+                    placeholder="Telefono (opzionale)..."
+                    autocomplete="tel">
+
+                <input
+                    type="text"
+                    id="video-title"
+                    placeholder="Titolo del video..."
+                    required>
+
+                <textarea
+                    id="business-description"
+                    rows="3"
+                    placeholder="Descrizione dell'attività / video (opzionale)...">
+                </textarea>
+
+                <button
+                    id="upload-submit-button"
+                    class="submit-btn"
+                    type="button"
+                    onclick="handleVideoUpload()">
+                    Salva e carica su Liami.AI
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- EFFETTO CURSORE -->
+    <div class="cursor-aura" aria-hidden="true"></div>
+
+
+
+    <!-- SCHERMATA PRINCIPALE -->
+    <main class="main-container">
+
+        <div id="home-screen">
+
+            <header class="header">
+
+                <div class="logo">
+                    <span class="logo-icon">✦</span>
+                    <span>Liami</span>
+                </div>
+
+                <div class="status">
+                    <span class="status-dot"></span>
+                    <span class="status-text">
+                        Hai bisogno di aiuto? Liami lo trova per te
+                    </span>
+                </div>
+
+            </header>
+
+
+            <section class="hero">
+
+                <div class="hero-icon">✧</div>
+
+                <h1>liami.ai</h1>
+
+                <p>
+                    Chiedimi qualsiasi cosa.<br>
+                    Sono qui per aiutarti a esplorare nuove idee e trovare ciò che cerchi.
+                </p>
+
+
+                <div class="input-container">
+
+                    <textarea
+                        id="user-input"
+                        placeholder="Chiedimi qualcosa..."
+                        enterkeyhint="send"
+                        autocomplete="off"
+                        rows="1">
+                    </textarea>
+
+                    <div class="input-actions">
+
+                        <span class="input-hint">
+                            Liami.AI
+                        </span>
+
+                        <button
+                            id="send-button"
+                            type="button"
+                            aria-label="Invia messaggio">
+                            ↑
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <div class="suggestions">
+
+                    <button class="suggestion" type="button">
+                        ✧ Ristrutturare casa
+                    </button>
+
+                    <button class="suggestion" type="button">
+                        ◇ Ristoranti vicini a me
+                    </button>
+
+                    <button class="suggestion" type="button">
+                        ⌕ Libri di fantascienza
+                    </button>
+
+                </div>
+
+            </section>
+
+
+            <section
+                id="chat-area"
+                class="chat-area"
+                aria-live="polite">
+            </section>
+
+
+            <footer>
+                Liami.AI · Your personal intelligence
+            </footer>
+
+        </div>
+
+    </main>
+
+
+
+    <!-- FEED VIDEO -->
+    <section
+        class="liami-feed"
+        id="liami-feed"
+        hidden
+        aria-label="Video delle attività">
+
+        <div
+            class="feed-container"
+            id="feed-container">
+        </div>
+
+    </section>
+
+
+
+    <!-- PULSANTE MAPPA -->
+    <button
+        id="open-map-button"
+        class="open-map-button"
+        type="button">
+        ⌖ Apri mappa
+    </button>
+
+
+
+    <!-- MAPPA GOOGLE -->
+    <div
+        id="map-overlay"
+        class="map-overlay"
+        aria-hidden="true">
+
+        <div
+            class="map-window"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="map-title">
+
+            <div class="map-window-header">
+
+                <div>
+                    <h2 id="map-title">
+                        Esplora la mappa
+                    </h2>
+
+                    <span>
+                        Google Maps · Liami.AI
+                    </span>
+                </div>
+
+                <button
+                    id="close-map"
+                    type="button"
+                    aria-label="Chiudi mappa">
+                    ✕
+                </button>
+
+            </div>
+
+
+            <iframe
+                title="Mappa dei risultati Liami"
+                src="https://maps.google.com/maps?q=Italia&z=5&output=embed"
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"
+                allowfullscreen>
+            </iframe>
+
+        </div>
+
+    </div>
+
+</body>
+</html>

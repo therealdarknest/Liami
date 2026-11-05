@@ -1,0 +1,1611 @@
+/* RESET GENERALE */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    background: #09090d;
+    color: #ffffff;
+font-family: "Times New Roman", serif;
+    overflow-x: hidden;
+}
+
+/* AURA VIOLA */
+
+.cursor-aura {
+    position: fixed;
+
+    width: 650px;
+    height: 650px;
+
+    left: 0;
+    top: 0;
+
+    pointer-events: none;
+    z-index: 0;
+
+    background: radial-gradient(
+        circle,
+        rgba(130, 60, 255, 0.19) 0%,
+        rgba(100, 40, 200, 0.10) 30%,
+        rgba(83, 33, 163, 0.04) 55%,
+        transparent 72%
+    );
+
+    transform: translate(-50%, -50%);
+
+    transition: opacity 0.3s ease;
+}
+
+/* parte principale */
+
+.main-container {
+    position: relative;
+    z-index: 1;
+
+    min-height: 100vh;
+
+    display: flex;
+    flex-direction: column;
+
+    padding: 30px 55px;
+}
+
+#home-screen {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+}
+
+/* HEADER */
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    font-size: 19px;
+    font-weight: 700;
+    letter-spacing: 3px;
+}
+
+.logo-icon {
+    color: #a879ff;
+    font-size: 27px;
+}
+
+.status {
+    color: #aaa6b5;
+    font-size: 13px;
+
+    display: flex;
+    align-items: center;
+    gap: 9px;
+}
+
+.status-dot {
+    width: 7px;
+    height: 7px;
+
+    border-radius: 50%;
+    background: #a879ff;
+
+    box-shadow: 0 0 12px #a879ff;
+}
+
+/* SEZIONE CENTRALE */
+
+.hero {
+    width: 100%;
+    max-width: 850px;
+
+    margin: auto;
+    text-align: center;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.hero-icon {
+    font-size: 45px;
+    color: #b18aff;
+
+    margin-bottom: 25px;
+
+    text-shadow: 0 0 30px #8b4dff;
+}
+
+.hero h1 {
+    font-size: clamp(32px, 5vw, 52px);
+    font-weight: 500;
+    letter-spacing: -2px;
+
+    margin-bottom: 17px;
+}
+
+.hero p {
+    color: #9994a5;
+    font-size: 15px;
+    line-height: 1.7;
+
+    margin-bottom: 38px;
+}
+
+/* CASELLA DI TESTO */
+
+.input-container {
+    width: 100%;
+
+    background: rgba(255, 255, 255, 0.045);
+
+    border: 1px solid rgba(255, 255, 255, 0.12);
+
+    border-radius: 20px;
+
+    padding: 20px;
+
+    backdrop-filter: blur(15px);
+
+    transition: border 0.3s, box-shadow 0.3s;
+}
+
+.input-container:focus-within {
+    border-color: rgba(167, 121, 255, 0.65);
+
+    box-shadow: 0 0 35px rgba(130, 70, 255, 0.12);
+}
+
+textarea {
+    width: 100%;
+    height: 55px;
+
+    resize: none;
+
+    background: transparent;
+    border: none;
+    outline: none;
+
+    color: white;
+
+    font-family: inherit;
+    font-size: 16px;
+}
+
+textarea::placeholder {
+    color: #777281;
+}
+
+.input-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.input-hint {
+    color: #777281;
+    font-size: 12px;
+}
+
+#send-button {
+    width: 39px;
+    height: 39px;
+
+    border: none;
+    border-radius: 12px;
+
+    background: #a477f5;
+    color: white;
+
+    font-size: 23px;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+#send-button:hover {
+    background: #bd9aff;
+    transform: translateY(-2px);
+}
+
+/* SUGGERIMENTI */
+
+.suggestions {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+
+    margin-top: 22px;
+}
+
+.suggestion {
+    padding: 11px 16px;
+
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 30px;
+
+    background: rgba(255, 255, 255, 0.035);
+
+    color: #aaa6b5;
+
+    font-size: 12px;
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+.suggestion:hover {
+    color: white;
+    border-color: #a477f5;
+    background: rgba(164, 119, 245, 0.12);
+}
+
+/* AREA CHAT */
+
+.chat-area {
+    width: 100%;
+    max-width: 850px;
+
+    margin: 0 auto;
+}
+
+.message {
+    padding: 17px 20px;
+    margin-bottom: 12px;
+
+    border-radius: 15px;
+
+    background: rgba(255, 255, 255, 0.06);
+
+    color: white;
+    line-height: 1.6;
+
+    overflow-wrap: anywhere;
+}
+
+/* FOOTER */
+
+footer {
+    text-align: center;
+
+    color: #55515f;
+    font-size: 11px;
+
+    padding-top: 25px;
+}
+
+/* MOBILE */
+
+@media (max-width: 600px) {
+
+    .main-container {
+        padding: 22px;
+    }
+
+    .hero h1 {
+        letter-spacing: -1px;
+    }
+
+    .suggestions {
+        gap: 8px;
+    }
+
+    .cursor-aura {
+        width: 400px;
+        height: 400px;
+    }
+}
+
+/* ACCESSIBILITÀ */
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Liami FEED */
+
+.Liami-feed {
+    width: 100%;
+    max-width: 750px;
+    margin: 100px auto;
+    padding: 20px;
+}
+
+.feed-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.feed-header h2 {
+    color: white;
+    font-size: 25px;
+}
+
+.feed-header span {
+    color: #a78bfa;
+    font-size: 11px;
+    letter-spacing: 2px;
+}
+
+.feed-container {
+    height: 650px;
+    overflow-y: scroll;
+    scroll-snap-type: y mandatory;
+    border-radius: 18px;
+    scrollbar-width: none;
+}
+
+.feed-container::-webkit-scrollbar {
+    display: none;
+}
+
+.video-card {
+    height: 100%;
+    min-height: 650px;
+    position: relative;
+    scroll-snap-align: start;
+    overflow: hidden;
+    background: #17141f;
+    border-radius: 18px;
+    margin-bottom: 15px;
+}
+
+.video-card video {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    object-fit: cover;
+}
+
+.video-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        transparent 40%,
+        rgba(0, 0, 0, 0.85)
+    );
+    pointer-events: none;
+}
+
+.video-info {
+    position: absolute;
+    bottom: 30px;
+    left: 22px;
+    z-index: 2;
+    color: white;
+    max-width: 75%;
+}
+
+.video-info h3 {
+    font-size: 20px;
+}
+
+.video-info p {
+    color: #ddd;
+    font-size: 14px;
+}
+
+.video-info span {
+    color: #c4b5fd;
+    font-size: 13px;
+}
+
+.video-actions {
+    position: absolute;
+    right: 18px;
+    bottom: 45px;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    color: white;
+}
+
+.video-actions button {
+    background: rgba(255,255,255,0.12);
+    border: none;
+    color: white;
+    border-radius: 50%;
+    width: 42px;
+    height: 42px;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+.like-button.liked {
+    color: #ff4d75;
+}
+
+/* Liami FEED */
+
+.liami-feed {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    height: 100dvh;
+    background: #08080d;
+}
+
+.liami-feed[hidden] {
+    display: none;
+}
+
+/* SCORRIMENTO VERTICALE */
+
+.feed-container {
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    scroll-snap-type: y mandatory;
+    scrollbar-width: none;
+    border-radius: 0;
+}
+
+.feed-container::-webkit-scrollbar {
+    display: none;
+}
+
+/* SINGOLO VIDEO */
+
+.video-card {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 100%;
+    margin-bottom: 0;
+    overflow: hidden;
+    scroll-snap-align: start;
+    background: #08080d;
+    border-radius: 0;
+}
+
+/* VIDEO VERTICALE */
+
+.video-card video {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    inset: 0;
+    object-fit: contain;
+    background: #08080d;
+}
+
+/* SFUMATURA INFERIORE */
+
+.video-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        to top,
+        rgba(0,0,0,0.85),
+        transparent 45%
+    );
+    pointer-events: none;
+}
+
+/* INFORMAZIONI VIDEO */
+
+.video-info {
+    position: absolute;
+    bottom: 40px;
+    left: 25px;
+    z-index: 2;
+    color: white;
+    max-width: 75%;
+}
+
+/* PULSANTI LATERALI */
+
+.video-actions {
+    position: absolute;
+    right: 22px;
+    bottom: 80px;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.video-actions button {
+    width: 48px;
+    height: 48px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    color: white;
+    font-size: 23px;
+    cursor: pointer;
+}
+
+#home-screen {
+    display: flex;
+    flex-direction: column;
+}
+/* =========================================================
+   VERSIONE SMARTPHONE (Android e iPhone)
+   Le regole qui sotto si applicano solo a schermi piccoli o
+   dispositivi touch: su PC il layout resta invariato.
+   ========================================================= */
+
+html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+}
+
+body {
+    min-height: 100dvh;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.main-container {
+    min-height: 100dvh;
+}
+
+textarea {
+    max-height: 160px;
+    line-height: 1.5;
+}
+
+/* Cuore del doppio tap sul video */
+
+.tap-heart {
+    position: absolute;
+    z-index: 4;
+    font-size: 90px;
+    color: #ff4d75;
+    pointer-events: none;
+    transform: translate(-50%, -50%) scale(0);
+    text-shadow: 0 0 30px rgba(255, 77, 117, 0.6);
+    animation: tap-heart 0.8s ease-out forwards;
+}
+
+@keyframes tap-heart {
+    0%   { transform: translate(-50%, -50%) scale(0);   opacity: 0; }
+    20%  { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+    40%  { transform: translate(-50%, -50%) scale(1);   opacity: 1; }
+    100% { transform: translate(-50%, -80%) scale(1);   opacity: 0; }
+}
+
+.video-card {
+    touch-action: manipulation;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.feed-container {
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Dispositivi touch: niente effetti hover "appiccicosi" */
+
+@media (hover: none) {
+
+    #send-button:hover {
+        background: #a477f5;
+        transform: none;
+    }
+
+    #send-button:active {
+        background: #bd9aff;
+        transform: scale(0.94);
+    }
+
+    .suggestion:hover {
+        color: #aaa6b5;
+        border-color: rgba(255, 255, 255, 0.10);
+        background: rgba(255, 255, 255, 0.035);
+    }
+
+    .suggestion:active {
+        color: white;
+        border-color: #a477f5;
+        background: rgba(164, 119, 245, 0.12);
+    }
+
+    .video-actions button:active {
+        transform: scale(0.9);
+    }
+}
+
+/* Smartphone */
+
+@media (max-width: 600px) {
+
+    .main-container {
+        padding:
+            calc(16px + env(safe-area-inset-top))
+            calc(18px + env(safe-area-inset-right))
+            calc(14px + env(safe-area-inset-bottom))
+            calc(18px + env(safe-area-inset-left));
+    }
+
+    /* Header compatto */
+
+    .header {
+        gap: 12px;
+    }
+
+    .logo {
+        font-size: 17px;
+        letter-spacing: 2px;
+        flex-shrink: 0;
+    }
+
+    .logo-icon {
+        font-size: 23px;
+    }
+
+    .status {
+        font-size: 11px;
+        gap: 7px;
+        text-align: right;
+        line-height: 1.35;
+    }
+
+    .status-dot {
+        flex-shrink: 0;
+    }
+
+    /* Area centrale */
+
+    .hero {
+        margin: auto 0;
+        padding: 28px 0 10px;
+    }
+
+    .hero-icon {
+        font-size: 38px;
+        margin-bottom: 16px;
+    }
+
+    .hero h1 {
+        font-size: 40px;
+        margin-bottom: 12px;
+    }
+
+    .hero p {
+        font-size: 15px;
+        line-height: 1.6;
+        margin-bottom: 26px;
+        padding: 0 6px;
+    }
+
+    /* Casella di testo */
+
+    .input-container {
+        padding: 14px 14px 12px 16px;
+        border-radius: 18px;
+    }
+
+    textarea {
+        height: auto;
+        min-height: 48px;
+        font-size: 16px; /* evita lo zoom automatico su iPhone */
+    }
+
+    #send-button {
+        width: 44px;
+        height: 44px;
+        border-radius: 13px;
+    }
+
+    /* Suggerimenti scorrevoli orizzontalmente */
+
+    .suggestions {
+        width: calc(100% + 36px);
+        margin: 18px -18px 0;
+        padding: 0 18px 4px;
+
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        gap: 8px;
+
+        overflow-x: auto;
+        scroll-snap-type: x proximity;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .suggestions::-webkit-scrollbar {
+        display: none;
+    }
+
+    .suggestion {
+        flex-shrink: 0;
+        min-height: 40px;
+        padding: 10px 15px;
+        font-size: 13px;
+        white-space: nowrap;
+        scroll-snap-align: start;
+    }
+
+    /* Chat */
+
+    .chat-area {
+        margin-top: 18px;
+    }
+
+    .message {
+        padding: 14px 16px;
+        font-size: 15px;
+        border-radius: 14px;
+    }
+
+    footer {
+        padding-top: 18px;
+    }
+
+    .cursor-aura {
+        width: 380px;
+        height: 380px;
+    }
+
+    /* Feed video a schermo intero */
+
+    .liami-feed {
+        height: 100vh;
+        height: 100svh;
+    }
+
+    .video-card video {
+        object-fit: cover;
+    }
+
+    .video-card::after {
+        background: linear-gradient(
+            to top,
+            rgba(0, 0, 0, 0.9),
+            rgba(0, 0, 0, 0.25) 35%,
+            transparent 55%
+        );
+    }
+
+    .video-info {
+        left: calc(16px + env(safe-area-inset-left));
+        bottom: calc(24px + env(safe-area-inset-bottom));
+        max-width: calc(100% - 100px);
+    }
+
+    .video-info h3 {
+        font-size: 18px;
+        line-height: 1.3;
+        margin-bottom: 6px;
+    }
+
+    .video-info p {
+        font-size: 14px;
+        line-height: 1.45;
+        margin-bottom: 6px;
+    }
+
+    .video-actions {
+        right: calc(12px + env(safe-area-inset-right));
+        bottom: calc(28px + env(safe-area-inset-bottom));
+        gap: 12px;
+    }
+
+    .video-actions button {
+        width: 46px;
+        height: 46px;
+        font-size: 21px;
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        transition: transform 0.15s;
+    }
+
+    .like-count {
+        font-size: 13px;
+        margin-top: -6px;
+    }
+}
+
+/* Smartphone molto piccoli (es. iPhone SE) */
+
+@media (max-width: 380px) {
+
+    .status-text {
+        display: none;
+    }
+
+    .hero h1 {
+        font-size: 34px;
+    }
+
+    .hero p {
+        font-size: 14px;
+    }
+}
+
+/* Smartphone in orizzontale */
+
+@media (max-height: 500px) and (orientation: landscape) {
+
+    .hero {
+        padding: 14px 0;
+    }
+
+    .hero-icon {
+        display: none;
+    }
+
+    .hero p {
+        margin-bottom: 16px;
+    }
+
+    .video-card video {
+        object-fit: contain;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .tap-heart {
+        animation-duration: 0.01ms;
+    }
+}
+
+/* PULSANTE MAPPA - NON MODIFICA IL FEED */
+
+.open-map-button {
+    position: fixed;
+    top: 25px;
+    right: 25px;
+    z-index: 100;
+
+    display: flex;
+    align-items: center;
+    gap: 9px;
+
+    padding: 12px 18px;
+
+    background: rgba(30, 22, 48, 0.85);
+    backdrop-filter: blur(15px);
+
+    border: 1px solid rgba(180, 140, 255, 0.4);
+    border-radius: 30px;
+
+    color: white;
+    font-family: inherit;
+    font-size: 14px;
+
+    cursor: pointer;
+    transition: 0.25s;
+}
+
+.open-map-button:hover {
+    background: #7951b5;
+    border-color: #b18aff;
+}
+
+@media (max-width: 600px) {
+    .open-map-button {
+        top: calc(15px + env(safe-area-inset-top));
+        right: calc(15px + env(safe-area-inset-right));
+    }
+}
+/* PULSANTE APRI MAPPA */
+
+.open-map-button {
+    position: fixed;
+    top: 25px;
+    right: 25px;
+    z-index: 50;
+
+    padding: 12px 18px;
+
+    border: 1px solid rgba(167,121,255,.4);
+    border-radius: 30px;
+
+    background: rgba(35,25,55,.9);
+    color: white;
+
+    font-family: inherit;
+    cursor: pointer;
+
+    backdrop-filter: blur(12px);
+}
+
+/* SFONDO DELLA FINESTRA */
+
+.map-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background: rgba(0,0,0,.45);
+    backdrop-filter: blur(5px);
+
+    opacity: 0;
+    visibility: hidden;
+
+    transition: .25s ease;
+}
+
+.map-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* FINESTRA */
+
+.map-window {
+    width: 65%;
+    height: 70%;
+
+    max-width: 1100px;
+    min-height: 350px;
+
+    background: #100e18;
+
+    border: 1px solid rgba(167,121,255,.4);
+    border-radius: 20px;
+
+    overflow: hidden;
+
+    display: flex;
+    flex-direction: column;
+
+    transform: scale(.92);
+    transition: transform .25s ease;
+
+    box-shadow: 0 20px 80px rgba(0,0,0,.6);
+}
+
+.map-overlay.active .map-window {
+    transform: scale(1);
+}
+
+/* HEADER */
+
+.map-window-header {
+    height: 75px;
+    flex-shrink: 0;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 15px 22px;
+
+    color: white;
+}
+
+.map-window-header h2 {
+    font-size: 19px;
+}
+
+.map-window-header span {
+    color: #a879ff;
+    font-size: 12px;
+}
+
+#close-map {
+    width: 38px;
+    height: 38px;
+
+    border: none;
+    border-radius: 50%;
+
+    background: #292137;
+    color: white;
+
+    font-size: 18px;
+    cursor: pointer;
+}
+
+/* MAPPA */
+
+.map-window iframe {
+    width: 100%;
+    flex: 1;
+
+    border: none;
+}
+
+/* SMARTPHONE */
+
+@media (max-width: 600px) {
+    .map-window {
+        width: 94%;
+        height: 75%;
+        border-radius: 16px;
+    }
+
+    .open-map-button {
+        top: 15px;
+        right: 15px;
+    }
+}
+#liami-feed[hidden] ~ #open-map-button {
+    display: none;
+}
+
+
+/* ==================================
+   LIAMI - RISULTATI RICERCA
+================================== */
+
+.liami-search-result {
+    margin-top: 12px;
+    padding: 14px;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    background: rgba(255,255,255,0.04);
+}
+
+.liami-search-result h3 {
+    margin: 0 0 8px;
+    font-size: 16px;
+}
+
+.liami-search-result p {
+    margin: 5px 0;
+    font-size: 13px;
+    opacity: 0.8;
+}
+
+.liami-search-result small {
+    display: block;
+    margin-top: 9px;
+    color: #b58aff;
+    font-size: 12px;
+}
+/* Blocco dei risultati in linea, con margini arrotondati */
+.liami-search-result-box {
+    width: 100%;
+    max-width: 850px;
+    margin: 15px auto;
+    
+    background: rgba(255, 255, 255, 0.045);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 20px; /* Margini arrotondati */
+    
+    padding: 22px;
+    backdrop-filter: blur(15px);
+    
+    color: white;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+/* Stile per i singoli elementi trovati all'interno del box */
+.liami-search-result-box .liami-search-item {
+    margin-top: 12px;
+    padding: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px; /* Arrotondato anche l'interno */
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.liami-search-result-box h3 {
+    margin: 0 0 8px;
+    font-size: 17px;
+    color: #fff;
+}
+
+.liami-search-result-box p {
+    margin: 4px 0;
+    font-size: 14px;
+    color: #aaa6b5;
+}
+
+.liami-search-result-box small {
+    display: block;
+    margin-top: 8px;
+    color: #a879ff;
+    font-size: 12px;
+}/* Permette lo scorrimento interno alla modale su schermi piccoli */
+.upload-modal-window {
+    max-height: 90vh;
+    overflow-y: auto;
+    scrollbar-width: none; /* Nasconde scrollbar su Firefox */
+}
+
+.upload-modal-window::-webkit-scrollbar {
+    display: none; /* Nasconde scrollbar su Chrome/Safari */
+}
+
+/* Stile dedicato alla textarea della descrizione */
+.upload-form-group textarea {
+    width: 100%;
+    padding: 14px 18px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 14px;
+    color: white;
+    font-family: inherit;
+    font-size: 15px;
+    outline: none;
+    resize: none;
+    transition: all 0.25s ease;
+}
+
+.upload-form-group textarea::placeholder {
+    color: #777281;
+}
+
+.upload-form-group textarea:focus {
+    border-color: rgba(167, 121, 255, 0.65);
+    box-shadow: 0 0 20px rgba(130, 70, 255, 0.15);
+}
+
+/* BARRA FLUTTUANTE IN BASSO A DESTRA */
+.floating-action-bar {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    z-index: 90;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.floating-btn {
+    padding: 12px 20px;
+    background: rgba(35, 25, 55, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(167, 121, 255, 0.4);
+    border-radius: 30px;
+    color: white;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(164, 119, 245, 0.3);
+    transition: all 0.25s ease;
+}
+
+.floating-btn.primary {
+    background: #a477f5;
+    border-color: #bd9aff;
+}
+
+.floating-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(164, 119, 245, 0.45);
+}
+
+/* MODALI E OVERLAY */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-window {
+    width: 90%;
+    max-width: 420px;
+    background: #100e18;
+    border: 1px solid rgba(167, 121, 255, 0.4);
+    border-radius: 24px;
+    padding: 25px;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8);
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+}
+
+.modal-window.upload-window {
+    max-width: 480px;
+    max-height: 90vh;
+    overflow-y: auto;
+    scrollbar-width: none;
+}
+
+.modal-window.upload-window::-webkit-scrollbar {
+    display: none;
+}
+
+.modal-overlay.active .modal-window {
+    transform: scale(1);
+}
+
+/* HEADER E TAB ACCEDI/REGISTRATI */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    color: white;
+}
+
+.auth-tabs {
+    display: flex;
+    gap: 10px;
+}
+
+.tab-btn {
+    background: none;
+    border: none;
+    color: #777281;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 4px 8px;
+    transition: 0.2s;
+}
+
+.tab-btn.active {
+    color: white;
+    border-bottom: 2px solid #a477f5;
+}
+
+.close-btn {
+    width: 34px;
+    height: 34px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    color: #aaa6b5;
+    cursor: pointer;
+}
+
+.close-btn:hover {
+    background: rgba(164, 119, 245, 0.25);
+    color: white;
+}
+
+/* INPUT E FORM */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.form-group[hidden] {
+    display: none;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 13px 16px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 14px;
+    color: white;
+    font-size: 14px;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    border-color: rgba(167, 121, 255, 0.65);
+}
+
+.form-group textarea {
+    resize: none;
+}
+
+/* DROPZONE FILE */
+.file-drop-zone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 18px;
+    background: rgba(255, 255, 255, 0.025);
+    border: 1.5px dashed rgba(167, 121, 255, 0.4);
+    border-radius: 14px;
+    color: #aaa6b5;
+    cursor: pointer;
+    text-align: center;
+}
+
+.upload-icon {
+    font-size: 20px;
+    color: #a879ff;
+}
+
+/* PULSANTE SUBMIT */
+.submit-btn {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 14px;
+    background: #a477f5;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.25s;
+    margin-top: 5px;
+}
+
+.submit-btn:hover {
+    background: #bd9aff;
+}
+.form-group[hidden] {
+    display: none !important;
+}
+
+
+/* ==========================================
+   LIAMI - MODALE REGISTRAZIONE MIGLIORATA
+========================================== */
+
+/* Animazione dimensioni finestra autenticazione */
+.modal-window:not(.upload-window) {
+    width: 90%;
+    max-width: 440px;
+    transition:
+        max-width 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+        width 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+        transform 0.3s ease;
+}
+
+/* Quando viene aperta la registrazione */
+.modal-window:not(.upload-window):has(#form-register:not([hidden])) {
+    width: 92%;
+    max-width: 680px;
+}
+
+/* Spaziatura interna */
+.modal-window:has(#form-register:not([hidden])) {
+    padding: 32px;
+}
+
+/* Transizione contenuto registrazione */
+#form-register {
+    animation: register-slide-in 0.45s ease both;
+}
+
+@keyframes register-slide-in {
+    from {
+        opacity: 0;
+        transform: translateY(14px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Titolo e descrizione */
+.register-heading {
+    font-size: 23px;
+    color: white;
+    margin-bottom: 7px;
+}
+
+.register-description {
+    color: #9994a5;
+    font-size: 13px;
+    line-height: 1.5;
+    margin-bottom: 22px;
+}
+
+/* Selettore tipo account */
+.register-type-selector {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.register-type-btn {
+    min-width: 0;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 7px;
+    text-align: left;
+
+    background: rgba(255,255,255,0.035);
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 15px;
+
+    color: white;
+    cursor: pointer;
+    transition: 0.25s ease;
+}
+
+.register-type-btn:hover {
+    background: rgba(164,119,245,0.08);
+    border-color: rgba(164,119,245,0.45);
+}
+
+.register-type-btn.active {
+    background: rgba(164,119,245,0.13);
+    border-color: #a477f5;
+    box-shadow: 0 0 22px rgba(164,119,245,0.10);
+}
+
+.register-type-icon {
+    font-size: 23px;
+    color: #b18aff;
+}
+
+.register-type-title {
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.register-type-description {
+    color: #9994a5;
+    font-size: 11px;
+    line-height: 1.4;
+}
+
+/* Campi registrazione */
+.register-fields {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 15px;
+}
+
+.register-fields .form-group {
+    display: contents;
+}
+
+.register-fields input,
+.register-fields select {
+    width: 100%;
+    min-width: 0;
+    height: 49px;
+    padding: 0 15px;
+
+    background: rgba(255,255,255,0.045);
+    border: 1px solid rgba(255,255,255,0.11);
+    border-radius: 12px;
+
+    color: white;
+    font-family: inherit;
+    font-size: 14px;
+    outline: none;
+
+    transition: border-color 0.2s, background 0.2s;
+}
+
+.register-fields input:focus,
+.register-fields select:focus {
+    border-color: #a477f5;
+    background: rgba(164,119,245,0.06);
+}
+
+.register-fields input::placeholder {
+    color: #777281;
+}
+
+.register-fields select {
+    color: #aaa6b5;
+    cursor: pointer;
+}
+
+.register-fields select option {
+    background: #100e18;
+    color: white;
+}
+
+/* Elementi a larghezza intera */
+.register-fields .full-width {
+    grid-column: 1 / -1;
+}
+
+/* Pulsante registrazione */
+#form-register .submit-btn {
+    min-height: 49px;
+    margin-top: 20px;
+}
+
+/* Smartphone */
+@media (max-width: 600px) {
+
+    .modal-window:not(.upload-window):has(#form-register:not([hidden])) {
+        width: 94%;
+        max-width: 480px;
+        max-height: 88dvh;
+        overflow-y: auto;
+        padding: 23px 19px;
+        scrollbar-width: none;
+    }
+
+    .modal-window:not(.upload-window):has(#form-register:not([hidden]))::-webkit-scrollbar {
+        display: none;
+    }
+
+    .register-fields {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .register-fields .full-width {
+        grid-column: auto;
+    }
+
+    .register-type-selector {
+        gap: 9px;
+    }
+
+    .register-type-btn {
+        padding: 13px 11px;
+    }
+}
+
+/* Accessibilità */
+@media (prefers-reduced-motion: reduce) {
+    .modal-window:not(.upload-window),
+    #form-register,
+    #client-register-fields,
+    #business-register-fields {
+        transition: none;
+        animation: none;
+    }
+}
+
+/* CAMBIO CAMPI REGISTRAZIONE */
+
+#client-register-fields,
+#business-register-fields {
+    animation: registerFieldsIn 0.35s ease;
+}
+
+#client-register-fields[hidden],
+#business-register-fields[hidden] {
+    display: none !important;
+}
+
+@keyframes registerFieldsIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* PULSANTI CLIENTE / AZIENDA */
+
+.register-type-btn {
+    transition: all 0.25s ease;
+}
+
+.register-type-btn.active {
+    background: #ffffff;
+    color: #09090d;
+    border-color: #ffffff;
+}

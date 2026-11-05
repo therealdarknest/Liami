@@ -1,0 +1,267 @@
+
+
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#09090d">
+
+    <title>Email verificata - LIAMI.AI</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #09090d;
+            color: white;
+            font-family: Arial, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .confirmation-card {
+            width: 100%;
+            max-width: 430px;
+            text-align: center;
+            padding: 45px 30px;
+            background: #111116;
+            border: 1px solid #292936;
+            border-radius: 24px;
+            box-shadow: 0 20px 70px rgba(0, 0, 0, 0.4);
+        }
+
+        .icon {
+            width: 76px;
+            height: 76px;
+            margin: 0 auto 25px;
+            border-radius: 50%;
+            background: rgba(34, 197, 94, 0.12);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #4ade80;
+            font-size: 38px;
+        }
+
+        h1 {
+            font-size: 27px;
+            margin-bottom: 14px;
+            letter-spacing: -0.5px;
+        }
+
+        .description {
+            color: #a1a1aa;
+            font-size: 15px;
+            line-height: 1.6;
+            margin-bottom: 28px;
+        }
+
+        .close-message {
+            padding: 16px;
+            background: #1b1b24;
+            border: 1px solid #30303b;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .brand {
+            margin-top: 35px;
+            color: #666674;
+            font-size: 13px;
+            letter-spacing: 2px;
+            font-weight: bold;
+        }
+
+        .error .icon {
+            background: rgba(239, 68, 68, 0.12);
+            border-color: rgba(239, 68, 68, 0.3);
+            color: #f87171;
+        }
+
+        .error .close-message {
+            color: #fca5a5;
+        }
+
+        .home-button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 14px 22px;
+            background: #a477f5;
+            border: none;
+            border-radius: 13px;
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+            text-decoration: none;
+            transition: 0.2s;
+        }
+
+        .home-button:hover {
+            background: #bd9aff;
+            transform: translateY(-2px);
+        }
+
+        .home-button[hidden] {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="confirmation-card" id="confirmation-card">
+
+        <div class="icon" id="status-icon">...</div>
+
+        <h1 id="status-title">Verifica in corso...</h1>
+
+        <p class="description" id="status-description">
+            Stiamo verificando il tuo indirizzo email.
+        </p>
+
+        <div class="close-message" id="close-message">
+            Attendi qualche secondo...
+        </div>
+
+        <a
+            href="https://therealdarknest.github.io/Liami/"
+            class="home-button"
+            id="home-button"
+            hidden
+        >
+            Torna a LIAMI.AI
+        </a>
+
+        <div class="brand">LIAMI.AI</div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+
+        const SUPABASE_URL =
+            "https://luxtuspsmyryopocdysx.supabase.co";
+
+        const SUPABASE_KEY =
+            "sb_publishable_zxxcavCb2WZk40Tmk9nwPA_bpYFtPcQ";
+
+        const supabaseClient = window.supabase.createClient(
+            SUPABASE_URL,
+            SUPABASE_KEY
+        );
+
+
+        async function verifyEmail() {
+
+            const title = document.getElementById("status-title");
+            const description = document.getElementById("status-description");
+            const message = document.getElementById("close-message");
+            const icon = document.getElementById("status-icon");
+            const card = document.getElementById("confirmation-card");
+            const homeButton = document.getElementById("home-button");
+
+            try {
+
+                const params = new URLSearchParams(
+                    window.location.search
+                );
+
+                const code = params.get("code");
+                const tokenHash = params.get("token_hash");
+                const type = params.get("type");
+
+                // Verifica tramite codice PKCE
+                if (code) {
+
+                    const { error } =
+                        await supabaseClient.auth.exchangeCodeForSession(code);
+
+                    if (error) throw error;
+
+                }
+
+                // Supporta anche i link con token_hash
+                else if (tokenHash && type) {
+
+                    const { error } =
+                        await supabaseClient.auth.verifyOtp({
+                            token_hash: tokenHash,
+                            type: type
+                        });
+
+                    if (error) throw error;
+
+                }
+
+                // Recupera l'utente verificato
+                const { data, error } =
+                    await supabaseClient.auth.getUser();
+
+                if (error) throw error;
+
+                if (!data.user || !data.user.email_confirmed_at) {
+                    throw new Error("Verifica email non completata.");
+                }
+
+                // VERIFICA RIUSCITA
+
+                icon.textContent = "✓";
+
+                title.textContent = "Email verificata!";
+
+                description.textContent =
+                    "Il tuo indirizzo email è stato confermato correttamente. Il tuo account LIAMI.AI è pronto.";
+
+                message.textContent =
+                    "Ora puoi tornare alla piattaforma e accedere al tuo account.";
+
+                homeButton.hidden = false;
+
+                // Pulisce i parametri del link dalla barra indirizzi
+                window.history.replaceState(
+                    {},
+                    document.title,
+                    window.location.pathname
+                );
+
+            } catch (error) {
+
+                console.error("Errore verifica email:", error);
+
+                card.classList.add("error");
+
+                icon.textContent = "!";
+
+                title.textContent = "Verifica non riuscita";
+
+                description.textContent =
+                    "Non siamo riusciti a verificare il tuo indirizzo email.";
+
+                message.textContent =
+                    "Il link potrebbe essere scaduto o già utilizzato. Prova a richiedere una nuova email di verifica.";
+
+                homeButton.hidden = false;
+
+            }
+
+        }
+
+        verifyEmail();
+
+    </script>
+
+</body>
+</html>
