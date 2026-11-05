@@ -512,12 +512,17 @@ function appendChatMessage(message, className) {
 function getSearchTerms(query) {
     const ignoredWords = new Set([
         "che", "come", "dove", "quando", "quale", "quali", "per", "con",
-        "una", "uno", "del", "della", "dei", "nelle", "vicino", "vicini",
-        "vicina", "vicine", "me", "cerca", "trovami", "cerco", "cercare"
+        "a", "ad", "al", "alla", "allo", "ai", "agli", "alle", "da", "dal",
+        "dalla", "di", "degli", "delle", "in", "il", "lo", "la", "i", "gli",
+        "le", "un", "una", "uno", "del", "della", "dei", "nelle", "nel",
+        "vicino", "vicini", "vicina", "vicine", "me", "cerca", "trovami",
+        "cerco", "cercare", "voglio", "vorrei", "posso", "devo", "fare",
+        "mia", "mio", "mie", "miei", "ha", "hanno", "bisogno", "serve",
+        "servono"
     ]);
 
     const terms = [...new Set(
-        query.toLocaleLowerCase("it").match(/[\p{L}\p{N}-]{2,}/gu) || []
+        normalizeSearchText(query).match(/[\p{L}\p{N}-]{2,}/gu) || []
     )]
         .filter((term) => !ignoredWords.has(term))
         .slice(0, 4);
@@ -525,14 +530,40 @@ function getSearchTerms(query) {
     return terms;
 }
 
+function normalizeSearchText(value) {
+    return value
+        .toLocaleLowerCase("it")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+}
+
 const relatedSearchTerms = {
-    ristrutturare: ["ristrutturazione", "ristrutturazioni", "edilizia", "edile", "costruzioni", "muratore", "impresa"],
-    ristrutturazione: ["ristrutturare", "edilizia", "edile", "costruzioni", "muratore", "impresa"],
-    ristrutturazioni: ["ristrutturare", "edilizia", "edile", "costruzioni", "muratore", "impresa"],
-    ristruttura: ["ristrutturazione", "edilizia", "edile", "costruzioni", "muratore", "impresa"],
-    edilizia: ["edile", "impresa", "costruzioni", "ristrutturazione", "muratore"],
-    edile: ["edilizia", "impresa", "costruzioni", "ristrutturazione", "muratore"],
-    muratore: ["edile", "edilizia", "costruzioni", "ristrutturazione"],
+    ristrutturare: ["ristrutturazione", "ristrutturazioni", "ristrutturando", "edilizia", "edile", "costruzioni", "muratore", "impresa edile", "lavori edili", "restauro", "rifacimento", "manutenzione", "rinnovo", "architetto", "geometra", "ingegnere edile", "progettazione", "muratura", "cartongesso", "piastrellista", "imbianchino", "idraulico", "elettricista", "serramenti", "infissi", "tetto", "copertura", "isolamento", "cappotto termico"],
+    ristrutturazione: ["ristrutturare", "ristrutturazioni", "edilizia", "edile", "costruzioni", "muratore", "impresa edile", "lavori edili", "restauro", "rifacimento", "manutenzione", "rinnovo", "architetto", "geometra", "ingegnere edile", "progettazione", "muratura", "cartongesso", "piastrellista", "imbianchino", "idraulico", "elettricista", "serramenti", "infissi", "tetto", "copertura", "isolamento", "cappotto termico"],
+    ristrutturazioni: ["ristrutturare", "ristrutturazione", "edilizia", "edile", "costruzioni", "muratore", "impresa edile", "lavori edili", "restauro", "rifacimento", "manutenzione", "architetto", "geometra", "progettazione", "muratura", "cartongesso", "piastrellista", "imbianchino", "idraulico", "elettricista"],
+    ristrutturando: ["ristrutturare", "ristrutturazione", "edilizia", "edile", "costruzioni", "muratore", "impresa edile", "lavori edili", "restauro", "rifacimento", "manutenzione", "architetto", "geometra", "progettazione"],
+    ristruttura: ["ristrutturazione", "edilizia", "edile", "costruzioni", "muratore", "impresa edile", "lavori edili"],
+    ristrutturato: ["ristrutturazione", "edilizia", "edile", "costruzioni", "muratore", "impresa edile", "lavori edili"],
+    casa: ["abitazione", "abitazioni", "costruzione", "costruzioni", "edilizia", "edile", "impresa edile", "ristrutturazione", "lavori edili", "muratore", "architetto", "geometra"],
+    case: ["abitazione", "abitazioni", "costruzione", "costruzioni", "edilizia", "edile", "impresa edile", "ristrutturazione", "lavori edili", "muratore", "architetto", "geometra"],
+    costruire: ["costruzione", "costruzioni", "edilizia", "edile", "impresa edile", "lavori edili", "muratore", "architetto", "geometra", "ingegnere edile"],
+    costruisco: ["costruire", "costruzione", "costruzioni", "edilizia", "edile", "impresa edile", "lavori edili", "muratore", "architetto", "geometra"],
+    costruzione: ["costruire", "costruzioni", "edilizia", "edile", "impresa edile", "lavori edili", "muratore", "architetto", "geometra"],
+    costruzioni: ["costruire", "costruzione", "edilizia", "edile", "impresa edile", "lavori edili", "muratore", "architetto", "geometra"],
+    edilizia: ["edile", "costruzioni", "ristrutturazione", "ristrutturare", "muratore", "impresa edile", "lavori edili", "architetto", "geometra"],
+    edile: ["edilizia", "costruzioni", "ristrutturazione", "ristrutturare", "muratore", "impresa edile", "lavori edili"],
+    muratore: ["edile", "edilizia", "costruzioni", "ristrutturazione", "muratura", "lavori edili"],
+    restauro: ["ristrutturazione", "ristrutturare", "edilizia", "edile", "impresa edile", "lavori edili"],
+    rifacimento: ["ristrutturazione", "ristrutturare", "edilizia", "lavori edili", "manutenzione"],
+    manutenzione: ["ristrutturazione", "edilizia", "edile", "lavori edili", "riparazione"],
+    architetto: ["architettura", "progettazione", "ristrutturazione", "edilizia", "geometra"],
+    geometra: ["architetto", "progettazione", "ristrutturazione", "edilizia", "pratiche edilizie"],
+    "lavori": ["lavori edili", "edilizia", "ristrutturazione", "manutenzione", "impresa edile"],
+    "lavori edili": ["edilizia", "ristrutturazione", "costruzioni", "impresa edile", "muratore"],
+    "bagno": ["ristrutturazione bagno", "idraulico", "piastrellista", "impianti idraulici"],
+    "cucina": ["ristrutturazione cucina", "idraulico", "elettricista", "impianti"],
+    "tetto": ["copertura", "tetti", "lattoniere", "isolamento", "edilizia"],
+    "infissi": ["serramenti", "finestre", "porte", "posa infissi"],
     idraulico: ["idraulica", "impianti", "tubi"],
     elettricista: ["elettrico", "elettricità", "impianti"],
     imbianchino: ["pittura", "imbiancatura", "verniciatura"],
@@ -540,7 +571,11 @@ const relatedSearchTerms = {
     ristorante: ["ristoranti", "ristorazione", "trattoria", "pizzeria"],
     ristoranti: ["ristorante", "ristorazione", "trattoria", "pizzeria"],
     parrucchiere: ["parrucchieri", "barbiere", "salone"],
-    dentista: ["dentisti", "odontoiatria", "odontoiatra"]
+    dentista: ["dentisti", "odontoiatria", "odontoiatra"],
+    libro: ["libri", "libreria", "librerie", "libreria indipendente"],
+    libri: ["libro", "libreria", "librerie", "libreria indipendente", "fantascienza", "fantasy"],
+    fantascienza: ["fantascientifico", "fantascientifica", "science fiction", "sci-fi"],
+    romanzo: ["libro", "libreria", "narrativa"]
 };
 
 function getExpandedSearchTerms(terms) {
@@ -551,19 +586,20 @@ function getExpandedSearchTerms(terms) {
         }
     }
 
-    return [...expandedTerms].slice(0, 16);
+    return [...expandedTerms].slice(0, 40);
 }
 
 function getBusinessRelevance(business, queryTerms) {
     const fields = [
-        { value: business.name, weight: 1 },
-        { value: business.category, weight: 1 },
-        { value: business.description, weight: 0.75 },
-        { value: business.city, weight: 0.4 }
+        { value: business.name, weight: 0.9, strong: true },
+        { value: business.category, weight: 1, strong: true },
+        { value: business.description, weight: 0.65, strong: true },
+        { value: business.city, weight: 0.2, strong: false }
     ].filter((field) => field.value);
 
     if (!queryTerms.length || !fields.length) return 0;
 
+    let hasStrongMatch = false;
     const total = queryTerms.reduce((score, term) => {
         const variants = [
             { value: term, weight: 1 },
@@ -573,8 +609,17 @@ function getBusinessRelevance(business, queryTerms) {
 
         for (const variant of variants) {
             for (const field of fields) {
-                if (field.value.toLocaleLowerCase("it").includes(variant.value)) {
-                    bestMatch = Math.max(bestMatch, variant.weight * field.weight);
+                const normalizedField = normalizeSearchText(field.value);
+                const normalizedVariant = normalizeSearchText(variant.value);
+                const isPhrase = normalizedVariant.includes(" ");
+                const matches = isPhrase
+                    ? normalizedField.includes(normalizedVariant)
+                    : new RegExp(`(^|[^\\p{L}\\p{N}])${normalizedVariant.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}($|[^\\p{L}\\p{N}])`, "u").test(normalizedField);
+
+                if (matches) {
+                    const matchScore = variant.weight * field.weight;
+                    if (field.strong) hasStrongMatch = true;
+                    bestMatch = Math.max(bestMatch, matchScore);
                 }
             }
         }
@@ -582,34 +627,116 @@ function getBusinessRelevance(business, queryTerms) {
         return score + bestMatch;
     }, 0);
 
+    if (!hasStrongMatch) return 0;
     return Math.round((total / queryTerms.length) * 100);
 }
 
+// ========================================
+// MOTORE DI RICERCA LIAMI - SUPABASE
+// ========================================
+
 async function searchBusinesses(query) {
-    const queryTerms = getSearchTerms(query);
-    const terms = getExpandedSearchTerms(queryTerms);
-    if (!terms.length) return [];
+    if (!query || !query.trim()) {
+        return [];
+    }
 
-    const filters = terms.flatMap((term) => [
-        `name.ilike.%${term}%`,
-        `category.ilike.%${term}%`,
-        `city.ilike.%${term}%`,
-        `description.ilike.%${term}%`
-    ]);
+    try {
+        const { data, error } = await supabaseClient.rpc("search_liami", {
+            p_query: query.trim(),
+            p_limit: 50
+        });
 
-    const { data, error } = await supabaseClient
-        .from("businesses")
-        .select("id, name, category, city, address, phone, description")
-        .or(filters.join(","))
-        .limit(30);
+        if (error) {
+            console.error("Errore motore di ricerca LIAMI:", error);
+            throw error;
+        }
 
-    if (error) throw error;
-    return (data || [])
-        .map((business) => ({
-            ...business,
-            relevance: getBusinessRelevance(business, queryTerms)
-        }))
-        .sort((first, second) => second.relevance - first.relevance);
+        const results = (data || []).map(business => {
+            const relevanceScore = Number(business.relevance) || 0;
+
+            return {
+                ...business,
+
+                // Percentuale indicativa di pertinenza
+                relevance: Math.min(
+                    100,
+                    Math.max(0, Math.round(relevanceScore * 100))
+                ),
+
+                // Video trovati dalla ricerca SQL
+                matching_videos: business.matching_videos || []
+            };
+        });
+
+        // Ordina dal risultato più pertinente
+        results.sort((a, b) => b.relevance - a.relevance);
+
+        console.log("LIAMI - Risultati:", results);
+
+        return results;
+
+    } catch (error) {
+        console.error("Ricerca LIAMI non riuscita:", error);
+        return [];
+    }
+}
+
+// ========================================
+// FEED INTELLIGENTE - VIDEO PERTINENTI
+// ========================================
+
+function buildSearchFeed(results) {
+    const businessesById = {};
+    const matchingVideos = [];
+    const usedVideos = new Set();
+
+    const businessIds = new Set(
+        results.map(business => business.id)
+    );
+
+    // Registra le attività trovate
+    results.forEach(business => {
+        businessesById[business.id] = business;
+
+        // Inserisce prima i video trovati dal motore SQL
+        const videos = Array.isArray(business.matching_videos)
+            ? business.matching_videos
+            : [];
+
+        videos.forEach(video => {
+            if (!video.video_url) return;
+
+            const key = video.id || video.video_url;
+
+            if (usedVideos.has(key)) return;
+
+            usedVideos.add(key);
+
+            matchingVideos.push({
+                ...video,
+                business_id: video.business_id || business.id,
+                title: video.title || video.description || business.name,
+                description: video.description || ""
+            });
+        });
+    });
+
+    // Recupera anche gli altri video delle attività trovate
+    const remainingVideos = allFeedVideos.filter(video => {
+        if (!businessIds.has(video.business_id)) return false;
+
+        const key = video.id || video.video_url;
+
+        if (usedVideos.has(key)) return false;
+
+        usedVideos.add(key);
+        return true;
+    });
+
+    return {
+        videos: [...matchingVideos, ...remainingVideos],
+        businessesById
+    };
 }
 
 function renderBusinessResults(results, query) {
@@ -810,14 +937,18 @@ async function handleSearch() {
     try {
         const results = await searchBusinesses(query);
         await videoFeedPromise;
+
+        // Mostra le attività trovate
         renderBusinessResults(results, query);
 
-        const resultIds = new Set(results.map((business) => business.id));
-        const matchingVideos = allFeedVideos.filter((video) => resultIds.has(video.business_id));
-        const businessesById = new Map(
-            results.map((business) => [business.id, business])
+        // Costruisce il feed dando priorità ai video pertinenti
+        const feedData = buildSearchFeed(results);
+
+        // Mostra il feed aggiornato
+        renderFeed(
+            feedData.videos,
+            feedData.businessesById
         );
-        renderFeed(matchingVideos, businessesById);
 
         const feed = document.getElementById("liami-feed");
         const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
